@@ -13,4 +13,4 @@ https://e-class.ionio.gr/courses/NOC122/
 
 Εντός του container θα πρέπει ήδη να είναι λειτουργικά το asciinema και το clips :-)
 
-* **CLIPS Lab#1:** [asciinema](https://asciinema.org/a/392401)
+* **CLIPS Lab#1:** [asciinema](https://asciinema.org/a/392401) | [pdf](./blob/main/MLLab-Clips-1.pdf)
