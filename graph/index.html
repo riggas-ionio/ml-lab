@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Graph</title>
+        <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="node_list">
+            Nodes - links
+            <div>
+            <textarea id="nodes" style="min-width:300px; min-height: 500px">ROOT</textarea>
+            </div>
+        </div>
+        <div id="body"></div>
+        <script src="graph.js" charset="utf-8"></script>
+        <script>
+            class Stack {
+              constructor() {
+                this.items = [];
+                this.count = 0;
+              }
+
+              isEmpty(){
+                return this.count==0;
+              }
+
+              getLength() {
+                return this.count;
+              }
+
+              push(item) {
+                this.items.push(item);
+                this.count = this.count + 1;
+              }
+
+              pop() {
+                if(this.count > 0) {
+                  this.count = this.count - 1;
+                }
+
+                return this.items.pop();
+              }
+
+              peek() {
+                return this.items.slice(-1)[0];
+              }
+            }
+            function getNodeDFS(root, lookup){
+                let stack = new Stack();
+                let explored = new Set();
+                stack.push(root);
+                explored.add(root);
+                while (!stack.isEmpty()) {
+                    let t = stack.pop();
+                    console.log(t);
+                    if ( t.name === lookup )
+                        return t;
+                    if ( t.children){
+                        $.each(t.children, function(n, node){
+                            stack.push(node);
+                        });
+                    }
+                }
+                return false;
+            }
+            function redraw(){
+                var nodes = $('#nodes').val().split("\n").filter(function(entry) { return entry.trim() != ''; });
+                var incrnum = 0;
+                console.log( nodes );
+                var nodesObj = { name:"ROOT", children:[], 'incr':incrnum++};
+                $.each(nodes, function(n){
+                    console.log(n, nodes[n], incrnum);
+                    var line = nodes[n];
+                    line = line.trim();
+                    var line_parts = line.split(" ");
+                    line_parts = line_parts.filter(function(entry) { return entry.trim() != ''; });
+                    for( var i=0; i<line_parts.length; i++){
+                        console.log(line_parts[i], line_parts[i].length);
+                        line_parts[i] = line_parts[i].trim();
+                        console.log(line_parts[i], line_parts[i].length);
+                    }
+                    if ( line_parts.length==1){
+                        nodesObj.children.push({'name': nodes[n].trim(), 'incr':incrnum++ });
+                    } else if (line_parts.length>=2){
+                        var from = getNodeDFS(nodesObj, line_parts[0].trim());
+                        var to = line_parts[1].trim();
+                        console.log('Add link ', from, to);
+                        if (from === false)
+                            nodesObj.children.push({name: to, 'incr':incrnum++ });
+                        else {
+                            if ( !from.children) {
+                                from.children = [];
+                            }
+                            from.children.push({name: to, 'incr':incrnum++ });
+                        }
+                    }
+                });
+                root = nodesObj;
+                update(root);
+            }
+            $( document ).ready(function() {
+                console.log( "ready!" );
+                $('#nodes').on('change', function(){
+                    redraw();
+                });
+                $('#nodes').on('keyup', function(ev){
+                    //console.log(ev);
+                    var code = ev.key; // recommended to use e.key, it's normalized across devices and languages
+                    if(code==="Enter")
+                        redraw();
+                });
+            });
+        </script>
+    </body>
+</html>
