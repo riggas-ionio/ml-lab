@@ -86,14 +86,18 @@
                     } else if (line_parts.length>=2){
                         var from = getNodeDFS(nodesObj, line_parts[0].trim());
                         var to = line_parts[1].trim();
-                        console.log('Add link ', from, to);
+                        var dist = null;
+                        if (line_parts.length>=3){
+                            dist = line_parts[2].trim();
+                        }
+                        console.log('Add link ', from, to, dist);
                         if (from === false)
-                            nodesObj.children.push({name: to, 'incr':incrnum++ });
+                            nodesObj.children.push({name: to, 'incr':incrnum++, 'dist':dist });
                         else {
                             if ( !from.children) {
                                 from.children = [];
                             }
-                            from.children.push({name: to, 'incr':incrnum++ });
+                            from.children.push({name: to, 'incr':incrnum++, 'dist':dist });
                         }
                     }
                 });
