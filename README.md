@@ -1,6 +1,6 @@
 #### ML Lab - Ionio
 
-https://e-class.ionio.gr/courses/NOC122/
+https://opencourses.ionio.gr/courses/DDI201/
 
 
 **Εργαστήριο CLIPS**
