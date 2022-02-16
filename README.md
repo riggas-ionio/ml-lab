@@ -12,6 +12,3 @@ https://e-class.ionio.gr/courses/NOC122/
 * `docker run --name ionio-ml-lab -it ionio-ml-lab-image:latest` ώστε να ξεκινήσετε και να _μπείτε_ στο container βασισμένο στο image που μόλις δημιουργήσατε.
 
 Εντός του container θα πρέπει ήδη να είναι λειτουργικά το asciinema και το clips :-)
-
-* **CLIPS Lab#1:** [asciinema](https://asciinema.org/a/392401) | [pdf](https://github.com/riggas-ionio/ml-lab/blob/main/MLLab-Clips-1.pdf)
-* **CLIPS Lab#2:** [asciinema](https://asciinema.org/a/394697) | [pdf](https://github.com/riggas-ionio/ml-lab/blob/main/MLLab-Clips-2.pdf)
