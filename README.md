@@ -12,3 +12,8 @@ https://opencourses.ionio.gr/courses/DDI201/
 * `docker run --name ionio-ml-lab -it ionio-ml-lab-image:latest` ώστε να ξεκινήσετε και να _μπείτε_ στο container βασισμένο στο image που μόλις δημιουργήσατε.
 
 Εντός του container θα πρέπει ήδη να είναι λειτουργικά το asciinema και το clips :-)
+
+* Υλοποίηση του διαγνωστικού συστήματος αυτοκινήτου (εργ.1):  
+https://asciinema.org/connect/ae4848c9-f706-473a-b89a-14c3ad51d55c  
+Η λύση σε [clp αρχείο](Solution_2.clp).  
+* **ToDo:** Προσθέστε προτεραιότητες με την εντολή `(declare (salience int))`, όπου int ένας ακέραιος. 
