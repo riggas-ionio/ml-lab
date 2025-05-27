@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minimax Tree with Alpha-Beta Pruning</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    .node circle {
+      fill: #fff;
+      stroke: steelblue;
+      stroke-width: 2px;
+    }
+    .node text {
+      font: 12px sans-serif;
+    }
+    .link {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 1.5px;
+    }
+    .max-level circle {
+      fill: #cce5ff;
+    }
+    .min-level circle {
+      fill: #f8d7da;
+    }
+    .leaf text {
+      font-weight: bold;
+      fill: #333;
+    }
+    .pruned circle {
+      fill: #aaa;
+      stroke: #999;
+      stroke-dasharray: 3,2;
+    }
+  </style>
+</head>
+<body>
+<svg width="1200" height="800"></svg>
+
+<script>
+(function() {
+  // Tree with fixed scores to allow meaningful alpha-beta pruning
+  //const leafScores = [0, -1, 1, 1, -1, -1, -1, -1, -1]; // 9 leaves
+  //const leafScores = [2, 3, 8, 5, 7, 6, 0, 1, 5]; // 9 leaves
+  const leafScores = Array.from({length: 27}, () => Math.floor(Math.random() * 21) - 10);
+
+
+  let scoreIndex = 0;
+
+  function buildTree(depth, type) {
+    if (depth === 0) {
+      return {
+        name: `Leaf${scoreIndex}`,
+        type: 'leaf',
+        score: leafScores[scoreIndex++],
+        pruned: false
+      };
+    }
+    const children = [];
+    for (let i = 0; i < 3; i++) {
+      children.push(buildTree(depth - 1, type === 'max' ? 'min' : 'max'));
+    }
+    return {
+      name: type.toUpperCase(),
+      type,
+      children
+    };
+  }
+
+  const treeData = buildTree(3, 'max');
+
+  function alphabeta(node, depth, alpha, beta, maximizingPlayer) {
+    if (node.type === 'leaf') {
+      return node.score;
+    }
+
+    if (maximizingPlayer) {
+      let maxEval = -Infinity;
+      for (const child of node.children) {
+        const eval = alphabeta(child, depth - 1, alpha, beta, false);
+        maxEval = Math.max(maxEval, eval);
+        alpha = Math.max(alpha, eval);
+        if (beta <= alpha) {
+          // Prune remaining children
+          const idx = node.children.indexOf(child);
+          for (let i = idx + 1; i < node.children.length; i++) {
+            markPruned(node.children[i]);
+          }
+          break;
+        }
+      }
+      node.score = maxEval;
+      return maxEval;
+    } else {
+      let minEval = Infinity;
+      for (const child of node.children) {
+        const eval = alphabeta(child, depth - 1, alpha, beta, true);
+        minEval = Math.min(minEval, eval);
+        beta = Math.min(beta, eval);
+        if (beta <= alpha) {
+          // Prune remaining children
+          const idx = node.children.indexOf(child);
+          for (let i = idx + 1; i < node.children.length; i++) {
+            markPruned(node.children[i]);
+          }
+          break;
+        }
+      }
+      node.score = minEval;
+      return minEval;
+    }
+  }
+
+  function markPruned(node) {
+    node.pruned = true;
+    if (node.children) {
+      node.children.forEach(markPruned);
+    }
+  }
+
+  alphabeta(treeData, 2, -Infinity, Infinity, true);
+
+  const root = d3.hierarchy(treeData);
+  const svg = d3.select("svg"),
+        width = +svg.attr("width"),
+        height = +svg.attr("height");
+
+  const layout = d3.tree().size([width - 100, height - 100]);
+  layout(root);
+
+  svg.append("g")
+    .attr("transform", "translate(50,50)")
+    .selectAll(".link")
+    .data(root.links())
+    .enter().append("path")
+    .attr("class", "link")
+    .attr("stroke", d => d.target.data.pruned ? "#eee" : "#ccc")
+    .attr("stroke-dasharray", d => d.target.data.pruned ? "5,3" : null)
+    .attr("d", d3.linkVertical()
+        .x(d => d.x)
+        .y(d => d.y));
+
+  const node = svg.append("g")
+    .attr("transform", "translate(50,50)")
+    .selectAll(".node")
+    .data(root.descendants())
+    .enter().append("g")
+    .attr("class", d => `node ${d.data.type}-level ${d.data.pruned ? 'pruned' : ''}`)
+    .attr("transform", d => `translate(${d.x},${d.y})`);
+
+  node.append("circle")
+    .attr("r", 20);
+
+  node.append("text")
+    .attr("dy", 4)
+    .attr("text-anchor", "middle")
+    .text(d => d.data.type === 'leaf' ? `${d.data.score}` : `${d.data.name}: ${d.data.score ?? ''}`);
+})();
+</script>
+</body>
+</html>
